@@ -27,7 +27,6 @@ while game:
             game=0
         if event.type==pygame.MOUSEBUTTONDOWN:
             mys=pygame.mouse.get_pos()
-            print(mys[0])
             if mys[0]<=480 and mys[1]<=480:
                 deska.move(mys)
     pygame.display.update()

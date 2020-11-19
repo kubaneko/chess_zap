@@ -17,6 +17,9 @@ class Deska:
         self.boardstate=[]
         for _ in range(0,8):
             self.boardstate.append([0,0,0,0,0,0,0,0])
+        for i in range(2,6):
+            for j in range(0,8):
+                self.boardstate[j][i]=piece.piece(j*60,i*60,self)
     def draw(self):
         self.screen.blit(self.normal,(0,0))
         self.screen.blit(self.abc,(0,480))
@@ -33,7 +36,8 @@ class Deska:
         for i in self.pieces:
             i.y=420-i.y
     def addpiece(self,typ,colour,x,y,board):
-        self.boardstate[x//60][y//60]=piece.piece(typ,colour,x,y,self)
+        figura=getattr(piece,str(typ))
+        self.boardstate[x//60][y//60]=figura(x,y,self,typ,colour)
         self.pieces.append(self.boardstate[x//60][y//60])
     def generatenew(self, type=0, Hash=None):
         with open("start.txt","r") as f:
