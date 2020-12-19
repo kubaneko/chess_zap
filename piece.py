@@ -1,43 +1,18 @@
 import pygame
-import board
-class piece:
-    def __init__(self,x,y,board,typ=None,colour=None):
-        self.typ=typ
-        self.colour=colour
-        self.board=board
-        self.x=x
-        self.y=y
-        self.typ=typ
-        if self.typ!=None:
-            self.image=pygame.image.load("../chess/Images/"+str(self.typ)+str(self.colour)+".png")
-class P(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-class B(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-class R(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-class Q(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-class N(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-class K(piece):
-    def getmove():
-        pass
-    def move():
-        pass
-        
+def getpicture(number):
+    if number==0:
+        return 0
+    elif number<0:
+        return slov[abs(number)][1]
+    else:
+        return slov[abs(number)][0]
+
+
+
+p=(pygame.image.load("../chess/Images/P1.png"), pygame.image.load("../chess/Images/P-1.png"),"P")
+n=(pygame.image.load("../chess/Images/N1.png"), pygame.image.load("../chess/Images/N-1.png"),"N")
+b=(pygame.image.load("../chess/Images/B1.png"), pygame.image.load("../chess/Images/B-1.png"),"B")
+q=(pygame.image.load("../chess/Images/Q1.png"), pygame.image.load("../chess/Images/Q-1.png"),"Q")
+k=(pygame.image.load("../chess/Images/K1.png"), pygame.image.load("../chess/Images/K-1.png"),"K")
+r=(pygame.image.load("../chess/Images/R1.png"), pygame.image.load("../chess/Images/R-1.png"),"R")
+slov={1: p, 2: p, 3: n, 4: b, 5: r, 6: r, 9: q, 66: k}
