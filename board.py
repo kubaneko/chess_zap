@@ -69,6 +69,56 @@ class Deska:
 	def promote(self):
 		pass
 	def isn_at(self,x,y):
+		for i in (-2,2):
+			for j in (-1,1):
+				if 8>x+i>-1 and 8>y+j>-1 and self.boardstate[y+j][x+i]*self.turn==-3:
+					return 0
+				if 8>x+j>-1 and 8>y+i>-1 and self.boardstate[y+i][x+j]*self.turn==-3:
+					return 0
+		for i in (1,-1):
+			x2=x+i
+			y2=y+i
+			while x2>=0 and x2<8:
+				if self.boardstate[y][x2]==0:
+					x2+=i
+				elif self.boardstate[y][x2]*self.turn in {-6,-5,-9}:
+					return 0
+					break
+				else:
+					break
+			while y2>=0 and y2<8:
+				if self.boardstate[y2][x]==0:
+					y2+=i
+				elif self.boardstate[y2][x]*self.turn in {-6,-5,-9}:
+					return 0
+					break
+				else:
+					break
+		for i in (-1,1):
+			for j in (-1,1):
+				x2=x+i
+				y2=y+j
+				while x2>=0 and y2>=0 and x2<8 and y2<8: 
+					if self.boardstate[y2][x2]==0:
+						x2+=i
+						y2+=j
+					elif self.boardstate[y2][x2]*self.turn==-4 or self.boardstate[y2][x2]*self.turn==-9:
+						return 0
+						break
+					else:
+						break
+		f=-self.turn+(self.reverse)-self.turn*self.reverse
+		for i in (1,-1):
+			if 8>x+i>-1 and 8>y+f>-1 and self.boardstate[y+f][x+i]*self.turn==-1 or self.boardstate[y+f][x+i]*self.turn==-2:
+				return 0
+		for i in (1,-1):
+			g=8>x+i>-1
+			if g and self.boardstate[y][x+i]*self.turn==-66 or self.boardstate[y][x+i]*self.turn==-65:
+				return 0
+			for j in (1,-1):
+				if 8>y+j>-1:
+					if self.boardstate[y+j][x]*self.turn==-66 or self.boardstate[y+j][x]*self.turn==-65:
+						return 0
+					if g and self.boardstate[y+j][x+i]*self.turn==-66 or self.boardstate[y+j][x+i]*self.turn==-65:
+						return 0
 		return 1
-
-

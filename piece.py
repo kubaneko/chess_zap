@@ -129,14 +129,17 @@ def move(coords,deska):
 	deska.updatepicture()
 	deska.select=None
 	deska.moves.clear()
-	if deska.enpassant!=None and np.sign(deska.boardstate[deska.enpassant[1]][deska.enpassant[0]])!=deska.turn:
-		deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]>>1
+	if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
+		deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
 		deska.enpassant=None
 	if deska.reverse:
 		deska.rever()
 	deska.turn*=-1
 def pove(coords,deska):
 	if abs(coords[1]-deska.select[1])==2:
+		if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
+			deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
+			deska.enpassant=None
 		deska.enpassant=coords
 		deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*2
 	elif coords[1]==0 or coords[1]==7:
@@ -151,11 +154,11 @@ def rove(coords,deska):
 	move(coords,deska)
 
 def kove(coords,deska):
-	g=(coords[0]-deska.select[0])>>1
-	deska.boardstate[deska.select[1]][deska.select[0]]=np.sign(deska.boardstate[deska.select[1]][deska.select[0]])*65
-	if abs(g)==1:
-		deska.boardstate[deska.select[1]][deska.select[0]+g]=np.sign(deska.boardstate[deska.select[1]][deska.select[0]])*5
-		deska.boardstate[deska.select[1]][int((1+g)*3.5)]=0
+	g=coords[0]-deska.select[0]
+	deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*65
+	if abs(g)==2:
+		deska.boardstate[deska.select[1]][deska.select[0]+g//2]=deska.turn*5
+		deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]=0
 	move(coords,deska)
 
 def getpicture(number):
