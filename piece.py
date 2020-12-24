@@ -81,7 +81,7 @@ def Night(number,x,y,sign,deska):
 			if 8>x+j>-1 and 8>y+i>-1 and deska.boardstate[y+i][x+j]*sign<=0:
 				deska.moves.add((x+j,y+i))
 def Pawn(number,x,y,sign,deska):
-	f=-deska.turn+(deska.reverse)-deska.turn*deska.reverse
+	f=-deska.turn-(deska.reverse-deska.turn*deska.reverse)
 	if deska.boardstate[y+f][x]==0:
 		deska.moves.add((x,y+f))
 		if y==(f*2)%7-f and deska.boardstate[y+f*2][x]==0:

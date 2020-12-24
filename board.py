@@ -5,12 +5,14 @@ class Deska:
 	def __init__(self,screen):
 		self.dot=pygame.image.load("../chess/Images/Dot.png")
 		self.image=pygame.image.load("../chess/Images/Board.png")
-		self.normal=self.image
 		self.imager=pygame.image.load("../chess/Images/Boardr.png")
-		self.screen=screen
 		self.abc=pygame.image.load("../chess/Images/Board_abc.png")
+		self.abcr=pygame.image.load("../chess/Images/Boardr_abc.png")
+		self.abcn=self.abc
 		self.num=pygame.image.load("../chess/Images/Board_num.png")
 		self.numr=pygame.image.load("../chess/Images/Board_numr.png")
+		self.normal=self.image
+		self.screen=screen
 		self.nums=self.num
 		self.boardstate=np.zeros((8,8), dtype=np.int8)
 		self.turn=1
@@ -20,10 +22,10 @@ class Deska:
 		self.moves=set()
 		self.result=None
 		self.enpassant=None
-		self.reverse=0
+		self.reverse=1
 	def draw(self):
 		self.screen.blit(self.normal,(0,0))
-		self.screen.blit(self.abc,(0,480))
+		self.screen.blit(self.abcn,(0,480))
 		self.screen.blit(self.nums,(480,0))
 		if self.help and self.select!=None:
 			self.screen.blit(pygame.image.load("../chess/Images/Stress.png"), tuple([60*x for x in self.select]))
@@ -38,11 +40,15 @@ class Deska:
 		if self.normal==self.image:
 			self.normal=self.imager
 			self.nums=self.numr
+			self.abcn=self.abcr
 		else:
 			self.normal=self.image
 			self.nums=self.num
-		self.boardstate=np.flipud(self.boardstate)
-		self.enpassant=(self.enpassant[0],7-self.enpassant[1])
+			self.abcn=self.abc
+		self.boardstate=self.boardstate[::-1]
+		self.boardstate=np.fliplr(self.boardstate)
+		if self.enpassant!=None:
+			self.enpassant=(self.enpassant[0],7-self.enpassant[1])
 		self.updatepicture()
 	def generatenew(self, type=0, Hash=None):
 		with open("start.txt","r") as f:
@@ -107,7 +113,7 @@ class Deska:
 						break
 					else:
 						break
-		f=-self.turn+(self.reverse)-self.turn*self.reverse
+		f=-self.turn-(self.reverse-self.turn*self.reverse)
 		for i in (1,-1):
 			if 8>x+i>-1 and 8>y+f>-1 and self.boardstate[y+f][x+i]*self.turn==-1 or self.boardstate[y+f][x+i]*self.turn==-2:
 				return 0
