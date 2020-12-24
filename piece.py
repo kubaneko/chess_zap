@@ -1,61 +1,71 @@
 import pygame
 import numpy as np
-def Bishop(number,x,y,sign,deska):
+def Bishop(number,x,y,deska):
 	for i in (-1,1):
 		for j in (-1,1):
 			x2=x+i
 			y2=y+j
 			while x2>=0 and y2>=0 and x2<8 and y2<8: 
 				if deska.boardstate[y2][x2]==0:
-					deska.moves.add((x2,y2))
+					if deska.trymove(x2,y2):
+						deska.moves.add((x2,y2))
 					x2+=i
 					y2+=j
-				elif deska.boardstate[y2][x2]*sign<0:
-					deska.moves.add((x2,y2))
+				elif deska.boardstate[y2][x2]*deska.turn<0:
+					if deska.trymove(x2,y2):
+						deska.moves.add((x2,y2))
 					break
 				else:
 					break
-def Rook(number,x,y,sign,deska):
+def Rook(number,x,y,deska):
 	for i in (1,-1):
 		x2=x+i
 		y2=y+i
 		while x2>=0 and x2<8:
 			if deska.boardstate[y][x2]==0:
-				deska.moves.add((x2,y))
+				if deska.trymove(x2,y):
+					deska.moves.add((x2,y))
 				x2+=i
-			elif deska.boardstate[y][x2]*sign<0:
-				deska.moves.add((x2,y))
+			elif deska.boardstate[y][x2]*deska.turn<0:
+				if deska.trymove(x2,y):
+					deska.moves.add((x2,y))
 				break
 			else:
 				break
 		while y2>=0 and y2<8:
 			if deska.boardstate[y2][x]==0:
-				deska.moves.add((x,y2))
+				if deska.trymove(x,y2):
+					deska.moves.add((x,y2))
 				y2+=i
-			elif deska.boardstate[y2][x]*sign<0:
-				deska.moves.add((x,y2))
+			elif deska.boardstate[y2][x]*deska.turn<0:
+				if deska.trymove(x,y2):
+					deska.moves.add((x,y2))
 				break
 			else:
 				break
-def Queen(number,x,y,sign,deska):
+def Queen(number,x,y,deska):
 	for i in (1,-1):
 		x2=x+i
 		y2=y+i
 		while x2>=0 and x2<8:
 			if deska.boardstate[y][x2]==0:
-				deska.moves.add((x2,y))
+				if deska.trymove(x2,y):
+					deska.moves.add((x2,y))
 				x2+=i
-			elif deska.boardstate[y][x2]*sign<0:
-				deska.moves.add((x2,y))
+			elif deska.boardstate[y][x2]*deska.turn<0:
+				if deska.trymove(x2,y):
+					deska.moves.add((x2,y))
 				break
 			else:
 				break
 		while y2>=0 and y2<8:
 			if deska.boardstate[y2][x]==0:
-				deska.moves.add((x,y2))
+				if deska.trymove(x,y2):
+					deska.moves.add((x,y2))
 				y2+=i
-			elif deska.boardstate[y2][x]*sign<0:
-				deska.moves.add((x,y2))
+			elif deska.boardstate[y2][x]*deska.turn<0:
+				if deska.trymove(x,y2):
+					deska.moves.add((x,y2))
 				break
 			else:
 				break
@@ -65,62 +75,69 @@ def Queen(number,x,y,sign,deska):
 			y2=y+j
 			while x2>=0 and y2>=0 and x2<8 and y2<8: 
 				if deska.boardstate[y2][x2]==0:
-					deska.moves.add((x2,y2))
+					if deska.trymove(x2,y2):
+						deska.moves.add((x2,y2))
 					x2+=i
 					y2+=j
-				elif deska.boardstate[y2][x2]*sign<0:
-					deska.moves.add((x2,y2))
+				elif deska.boardstate[y2][x2]*deska.turn<0:
+					if deska.trymove(x2,y2):
+						deska.moves.add((x2,y2))
 					break
 				else:
 					break
-def Night(number,x,y,sign,deska):
+def Night(number,x,y,deska):
 	for i in (-2,2):
 		for j in (-1,1):
-			if 8>x+i>-1 and 8>y+j>-1 and deska.boardstate[y+j][x+i]*sign<=0:
-				deska.moves.add((x+i,y+j))
-			if 8>x+j>-1 and 8>y+i>-1 and deska.boardstate[y+i][x+j]*sign<=0:
-				deska.moves.add((x+j,y+i))
-def Pawn(number,x,y,sign,deska):
+			if 8>x+i>-1 and 8>y+j>-1 and deska.boardstate[y+j][x+i]*deska.turn<=0:
+				if deska.trymove(x+i,y+j):
+					deska.moves.add((x+i,y+j))
+			if 8>x+j>-1 and 8>y+i>-1 and deska.boardstate[y+i][x+j]*deska.turn<=0:
+				if deska.trymove(x+j,y+i):
+					deska.moves.add((x+j,y+i))
+def Pawn(number,x,y,deska):
 	f=-deska.turn-(deska.reverse-deska.turn*deska.reverse)
 	if deska.boardstate[y+f][x]==0:
-		deska.moves.add((x,y+f))
+		if deska.trymove(x,y+f):
+			deska.moves.add((x,y+f))
 		if y==(f*2)%7-f and deska.boardstate[y+f*2][x]==0:
-			deska.moves.add((x,y+2*f))
+			if deska.trymove(x,y+2*f):
+				deska.moves.add((x,y+2*f))
 	for i in (1,-1):
-		if 8>x+i>-1 and (np.sign(deska.boardstate[y+f][x+i])==-sign or (-1<y+2*f<8 and deska.boardstate[y][x+i]==-2*sign)):
-			deska.moves.add((x+i, y+f))
+		if 8>x+i>-1 and (np.sign(deska.boardstate[y+f][x+i])==-deska.turn or (-1<y+2*f<8 and deska.boardstate[y][x+i]==-2*deska.turn)):
+			if deska.trymove(x+i,y+f):
+				deska.moves.add((x+i, y+f))
 	pass
-def King(number,x,y,sign,deska):
+def King(number,x,y,deska):
 	for i in (1,-1):
 		g=8>x+i>-1
-		if g and deska.isn_at(x+i,y) and deska.boardstate[y][x+i]*sign<=0:
+		if g and deska.isn_at(x+i,y) and deska.boardstate[y][x+i]*deska.turn<=0:
 			deska.moves.add((x+i,y))
 		for j in (1,-1):
 			if 8>y+j>-1:
-				if deska.isn_at(x,y+j) and deska.boardstate[y+j][x]*sign<=0:
+				if deska.isn_at(x,y+j) and deska.boardstate[y+j][x]*deska.turn<=0:
 					deska.moves.add((x,y+j))
-				if g and deska.isn_at(x+i,y+j) and deska.boardstate[y+j][x+i]*sign<=0:
+				if g and deska.isn_at(x+i,y+j) and deska.boardstate[y+j][x+i]*deska.turn<=0:
 					deska.moves.add((x+i,y+j))
 	for i in (1,-1):
 		if deska.isn_at(x,y):
-			if deska.boardstate[y][0]==6*sign:
+			if deska.boardstate[y][0]==6*deska.turn:
 				if deska.boardstate[y][1]==0 and deska.boardstate[y][2]==0 and deska.boardstate[y][3]==0:
 						if deska.isn_at(2,y) and deska.isn_at(3,y):
 							deska.moves.add((2,y))
-			if deska.boardstate[y][7]==6*sign:
+			if deska.boardstate[y][7]==6*deska.turn:
 				if deska.boardstate[y][6]==0 and deska.boardstate[y][5]==0:
 						if deska.isn_at(5,y) and deska.isn_at(6,y):
 							deska.moves.add((6,y))
-def king(number,x,y,sign,deska):
+def king(number,x,y,deska):
 	for i in (1,-1):
 		g=8>x+i>-1
-		if g and deska.isn_at(x+i,y) and deska.boardstate[y][x+i]*sign<=0:
+		if g and deska.isn_at(x+i,y) and deska.boardstate[y][x+i]*deska.turn<=0:
 			deska.moves.add((x+i,y))
 		for j in (1,-1):
 			if 8>y+j>-1:
-				if deska.isn_at(x,y+j) and deska.boardstate[y+j][x]*sign<=0:
+				if deska.isn_at(x,y+j) and deska.boardstate[y+j][x]*deska.turn<=0:
 					deska.moves.add((x,y+j))
-				if g and deska.isn_at(x+i,y+j) and deska.boardstate[y+j][x+i]*sign<=0:
+				if g and deska.isn_at(x+i,y+j) and deska.boardstate[y+j][x+i]*deska.turn<=0:
 					deska.moves.add((x+i,y+j))
 
 def move(coords,deska):
@@ -132,9 +149,16 @@ def move(coords,deska):
 	if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
 		deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
 		deska.enpassant=None
+	deska.History.append(deska.boardstate)
 	if deska.reverse:
 		deska.rever()
 	deska.turn*=-1
+	if deska.turn==-1:
+		deska.King=deska.Bing
+	else:
+		deska.King=deska.Wing
+
+
 def pove(coords,deska):
 	if abs(coords[1]-deska.select[1])==2:
 		if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
@@ -159,6 +183,10 @@ def kove(coords,deska):
 	if abs(g)==2:
 		deska.boardstate[deska.select[1]][deska.select[0]+g//2]=deska.turn*5
 		deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]=0
+	if deska.turn==-1:
+		deska.Bing=coords
+	else:
+		deska.Wing=coords
 	move(coords,deska)
 
 def getpicture(number):
@@ -167,7 +195,8 @@ def getpicture(number):
 	else:
 		return slov[number]
 def getmove(number,x,y,deska):
-	slov2[abs(number)](number,x,y,np.sign(number),deska)
+	slov2[abs(number)](number,x,y,deska)
+
 def domove(coords,deska):
 	slov3[abs(deska.boardstate[deska.select[1]][deska.select[0]])](coords, deska)
 

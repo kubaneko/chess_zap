@@ -22,7 +22,11 @@ class Deska:
 		self.moves=set()
 		self.result=None
 		self.enpassant=None
-		self.reverse=1
+		self.reverse=0
+		self.Bing=(4,0)
+		self.Wing=(4,7)
+		self.History=[]
+		self.King=self.Wing
 	def draw(self):
 		self.screen.blit(self.normal,(0,0))
 		self.screen.blit(self.abcn,(0,480))
@@ -57,15 +61,16 @@ class Deska:
 				for j in range(0,len(v)):
 					self.boardstate[7-i][j]=np.int8(v[j])
 					self.boardstate[i][j]=-np.int8(v[j])
+		self.History=[self.boardstate]
 		self.result=None
 		self.updatepicture()
 
 	def selmove(self,coords):
 		x=coords[0]//60
 		y=coords[1]//60
+		self.select=(x,y)
 		if self.boardstate[y][x]*self.turn>0:
 			piece.getmove(self.boardstate[y][x], x, y, self)    
-		self.select=(x,y)
 	def updatepicture(self):
 		for i in range(8):
 			for j in range(8):
@@ -128,3 +133,14 @@ class Deska:
 					if g and self.boardstate[y+j][x+i]*self.turn==-66 or self.boardstate[y+j][x+i]*self.turn==-65:
 						return 0
 		return 1
+	def trymove(self,x,y):
+		memor=self.boardstate[y][x]
+		self.boardstate[y][x]=self.boardstate[self.select[1]][self.select[0]]
+		self.boardstate[self.select[1]][self.select[0]]=0
+		if self.isn_at(self.King[0],self.King[1]):
+			i=1
+		else:
+			i=0
+		self.boardstate[self.select[1]][self.select[0]]=self.boardstate[y][x]
+		self.boardstate[y][x]=memor
+		return i
