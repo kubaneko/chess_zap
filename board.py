@@ -54,7 +54,7 @@ class Deska:
 		if self.enpassant!=None:
 			self.enpassant=(self.enpassant[0],7-self.enpassant[1])
 		self.updatepicture()
-	def generatenew(self, type=0, Hash=None):
+	def generatenew(self, type=0):
 		with open("start.txt","r") as f:
 			for i in range(0,2):
 				v=f.readline().split()
@@ -64,7 +64,6 @@ class Deska:
 		self.History=[self.boardstate]
 		self.result=None
 		self.updatepicture()
-
 	def selmove(self,coords):
 		x=coords[0]//60
 		y=coords[1]//60
@@ -144,3 +143,26 @@ class Deska:
 		self.boardstate[self.select[1]][self.select[0]]=self.boardstate[y][x]
 		self.boardstate[y][x]=memor
 		return i
+	def trystalemate(self):
+		piece.getmove(self.boardstate[self.King[1]][self.King[0]], self.King[0], self.King[1], self)
+		if len(self.moves)!=0:
+			self.moves.clear()
+			return 0
+		heur=-self.turn-(self.reverse-self.turn*self.reverse)
+		for i in range(heur%7-heur,(-heur)%7+2*heur,heur):
+			for j in range(8):
+				if self.boardstate[i][j]*self.turn>0:
+					self.select=(j,i)
+					piece.getmove(self.boardstate[i][j], j, i, self)
+					self.select=None
+					if len(self.moves)!=0:
+						self.moves.clear()
+						return 0
+		return 1
+	def updateresult(self):
+		if self.trystalemate():
+			if self.isn_at(self.King[0], self.King[1]):
+				self.result=0
+			else:
+				self.result=self.turn*-1
+		print(self.result)

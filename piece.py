@@ -1,5 +1,4 @@
 import pygame
-import numpy as np
 def Bishop(number,x,y,deska):
 	for i in (-1,1):
 		for j in (-1,1):
@@ -103,7 +102,7 @@ def Pawn(number,x,y,deska):
 			if deska.trymove(x,y+2*f):
 				deska.moves.add((x,y+2*f))
 	for i in (1,-1):
-		if 8>x+i>-1 and (np.sign(deska.boardstate[y+f][x+i])==-deska.turn or (-1<y+2*f<8 and deska.boardstate[y][x+i]==-2*deska.turn)):
+		if 8>x+i>-1 and (deska.boardstate[y+f][x+i]*deska.turn<0 or (-1<y+2*f<8 and deska.boardstate[y][x+i]==-2*deska.turn)):
 			if deska.trymove(x+i,y+f):
 				deska.moves.add((x+i, y+f))
 	pass
@@ -139,7 +138,6 @@ def king(number,x,y,deska):
 					deska.moves.add((x,y+j))
 				if g and deska.isn_at(x+i,y+j) and deska.boardstate[y+j][x+i]*deska.turn<=0:
 					deska.moves.add((x+i,y+j))
-
 def move(coords,deska):
 	deska.boardstate[coords[1]][coords[0]]=deska.boardstate[deska.select[1]][deska.select[0]]
 	deska.boardstate[deska.select[1]][deska.select[0]]=0
@@ -157,8 +155,6 @@ def move(coords,deska):
 		deska.King=deska.Bing
 	else:
 		deska.King=deska.Wing
-
-
 def pove(coords,deska):
 	if abs(coords[1]-deska.select[1])==2:
 		if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
@@ -172,11 +168,9 @@ def pove(coords,deska):
 	elif abs(coords[0]-deska.select[0])==1 and deska.boardstate[coords[1]][coords[0]]==0:
 		deska.boardstate[coords[1]+deska.turn-(deska.reverse)-deska.turn*deska.reverse][coords[0]]=0
 	move(coords,deska)
-
 def rove(coords,deska):
 	deska.boardstate[coords[1]][coords[0]]=deska.turn*5
 	move(coords,deska)
-
 def kove(coords,deska):
 	g=coords[0]-deska.select[0]
 	deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*65
@@ -188,7 +182,6 @@ def kove(coords,deska):
 	else:
 		deska.Wing=coords
 	move(coords,deska)
-
 def getpicture(number):
 	if number==0:
 		return 0
@@ -196,7 +189,6 @@ def getpicture(number):
 		return slov[number]
 def getmove(number,x,y,deska):
 	slov2[abs(number)](number,x,y,deska)
-
 def domove(coords,deska):
 	slov3[abs(deska.boardstate[deska.select[1]][deska.select[0]])](coords, deska)
 
