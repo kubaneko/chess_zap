@@ -61,7 +61,8 @@ class Deska:
 					self.boardstate[7-i][j]=np.int8(v[j])
 					self.boardstate[i][j]=-np.int8(v[j])
 		self.History=[self.boardstate.copy()]
-		self.fiftydraw=1
+		self.threefold=1
+		self.fiftydraw=0
 		self.result=None
 		self.updatepicture()
 	def selmove(self,coords):
@@ -76,7 +77,7 @@ class Deska:
 				self.picture[i][j]=piece.getpicture(self.boardstate[i][j])
 	def domove(self,coords):
 		piece.domove(coords,self)
-	def promote(self):
+	def promote(self,coords):
 		pass
 	def isn_at(self,x,y):
 		for i in (-2,2):
@@ -166,14 +167,16 @@ class Deska:
 			else:
 				self.result=self.turn*-1
 		else:
-			if self.fiftydraw==50:
+			if self.fiftydraw>=100:
 				self.result=0
 			elif self.Threefold():
+				self.result=0
+			elif self.Dead_position():
 				self.result=0
 	def Threefold(self):
 		counter=0
 		i=-1
-		while -self.fiftydraw<=i and counter<3:
+		while -self.threefold<=i and counter<3:
 			if (self.boardstate==self.History[i]).all():
 				counter+=1
 			i-=2
@@ -181,4 +184,15 @@ class Deska:
 			return 1
 		else:
 			return 0
+	def Dead_position(self):
+		minor=0
+		for i in range(8):
+			for j in range(8):
+				if abs(self.boardstate[j][i]) in {9,5,6,1,2}:
+					return 0
+				elif abs(self.boardstate[j][i])==3 or abs(self.boardstate[j][i])==4:
+					minor+=1
+		if minor<2:
+			return 1
+		return 0
 		

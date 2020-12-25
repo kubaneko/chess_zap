@@ -140,6 +140,7 @@ def king(number,x,y,deska):
 					deska.moves.add((x+i,y+j))
 def move(coords,deska):
 	if deska.boardstate[coords[1]][coords[0]]!=0:
+		deska.threefold=0
 		deska.fiftydraw=0
 	deska.boardstate[coords[1]][coords[0]]=deska.boardstate[deska.select[1]][deska.select[0]]
 	deska.boardstate[deska.select[1]][deska.select[0]]=0
@@ -150,6 +151,7 @@ def move(coords,deska):
 		deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
 		deska.enpassant=None
 	deska.History.append(deska.boardstate.copy())
+	deska.threefold+=1
 	deska.fiftydraw+=1
 	if deska.reverse:
 		deska.rever()
@@ -166,11 +168,12 @@ def pove(coords,deska):
 		deska.enpassant=coords
 		deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*2
 	elif coords[1]==0 or coords[1]==7:
-		if deska.promote():
+		if deska.promote(coords):
 			return
 	elif abs(coords[0]-deska.select[0])==1 and deska.boardstate[coords[1]][coords[0]]==0:
 		deska.boardstate[coords[1]+deska.turn-(deska.reverse)-deska.turn*deska.reverse][coords[0]]=0
-		deska.draw50=0
+		deska.threefold=0
+	deska.fiftydraw=0
 	move(coords,deska)
 def rove(coords,deska):
 	deska.boardstate[coords[1]][coords[0]]=deska.turn*5
