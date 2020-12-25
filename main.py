@@ -30,6 +30,8 @@ while game:
 				if (mys[0]//60,mys[1]//60) in deska.moves:
 				   deska.domove((mys[0]//60, mys[1]//60))
 				   deska.updateresult()
+				   if deska.result!=None:
+					   print(deska.result)
 				elif deska.select==None or deska.boardstate[mys[1]//60][mys[0]//60]*deska.turn>0:
 					deska.moves.clear()
 					deska.selmove(mys)

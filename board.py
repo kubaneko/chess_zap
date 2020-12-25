@@ -25,7 +25,6 @@ class Deska:
 		self.reverse=0
 		self.Bing=(4,0)
 		self.Wing=(4,7)
-		self.History=[]
 		self.King=self.Wing
 	def draw(self):
 		self.screen.blit(self.normal,(0,0))
@@ -61,7 +60,8 @@ class Deska:
 				for j in range(0,len(v)):
 					self.boardstate[7-i][j]=np.int8(v[j])
 					self.boardstate[i][j]=-np.int8(v[j])
-		self.History=[self.boardstate]
+		self.History=[self.boardstate.copy()]
+		self.fiftydraw=1
 		self.result=None
 		self.updatepicture()
 	def selmove(self,coords):
@@ -165,4 +165,20 @@ class Deska:
 				self.result=0
 			else:
 				self.result=self.turn*-1
-		print(self.result)
+		else:
+			if self.fiftydraw==50:
+				self.result=0
+			elif self.Threefold():
+				self.result=0
+	def Threefold(self):
+		counter=0
+		i=-1
+		while -self.fiftydraw<=i and counter<3:
+			if (self.boardstate==self.History[i]).all():
+				counter+=1
+			i-=2
+		if counter==3:
+			return 1
+		else:
+			return 0
+		
