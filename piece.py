@@ -161,6 +161,7 @@ def move(coords,deska):
 	else:
 		deska.King=deska.Wing
 def pove(coords,deska):
+	deska.fiftydraw=0
 	if abs(coords[1]-deska.select[1])==2:
 		if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
 			deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
@@ -168,24 +169,23 @@ def pove(coords,deska):
 		deska.enpassant=coords
 		deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*2
 	elif coords[1]==0 or coords[1]==7:
-		if deska.promote(coords):
-			return
+		deska.promote(coords)
 	elif abs(coords[0]-deska.select[0])==1 and deska.boardstate[coords[1]][coords[0]]==0:
 		deska.boardstate[coords[1]+deska.turn-(deska.reverse)-deska.turn*deska.reverse][coords[0]]=0
 		deska.threefold=0
-	deska.fiftydraw=0
 	move(coords,deska)
 def rove(coords,deska):
 	deska.boardstate[coords[1]][coords[0]]=deska.turn*5
 	move(coords,deska)
 def kove(coords,deska):
-	g=coords[0]-deska.select[0]
-	deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*65
-	if abs(g)==2:
-		if deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]*deska.turn==6:
-			deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]=5
-		deska.boardstate[deska.select[1]][deska.select[0]+g//2]=deska.turn*5
-		deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]=0
+	if abs(deska.boardstate[deska.select[1]][deska.select[0]])==66:
+		g=coords[0]-deska.select[0]
+		deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*65
+		if abs(g)==2:
+			if deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]*deska.turn==6:
+				deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]=5*deska.turn
+			deska.boardstate[deska.select[1]][deska.select[0]+g//2]=deska.turn*5
+			deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]=0
 	if deska.turn==-1:
 		deska.Bing=coords
 	else:
@@ -214,5 +214,5 @@ q=pygame.image.load("../chess/Images/Q1.png")
 k=pygame.image.load("../chess/Images/K1.png")
 r=pygame.image.load("../chess/Images/R1.png")
 slov={1: p, 2: p, 3: n, 4: b, 5: r,6: r, 9: q, 66: k, 65: k, -1: P, -2: P, -3: N, -4: B, -5: R,-6: R, -9: Q, -66: K, -65: K}
-slov3={1: pove, 2: pove, 3: move, 4: move, 5: move, 6: rove, 9: move, 66: kove, 65: move}
+slov3={1: pove, 2: pove, 3: move, 4: move, 5: move, 6: rove, 9: move, 66: kove, 65: kove}
 slov2={1: Pawn, 2: Pawn, 3: Night, 4: Bishop, 5: Rook, 6: Rook, 9: Queen, 66: King, 65: king}

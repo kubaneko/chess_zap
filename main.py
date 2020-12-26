@@ -4,10 +4,10 @@ import board
 pygame.init()
 
 game=1
-WIDTH=700
+WIDTH=695
 HEGHT=495
 FPS=30
-COLOUR=(169,169,169)
+COLOUR=(200,200,200)
 
 screen=pygame.display.set_mode((WIDTH,HEGHT))
 Clock=pygame.time.Clock()
@@ -38,4 +38,11 @@ while game:
 				else:
 					deska.select=None
 					deska.moves.clear()
+		elif 0:
+			for i in range(1,len(deska.History), 2):
+				deska.History[i]=deska.History[i][::-1]
+			if deska.reverse:
+				deska.reverse=0
+			else:
+				deska.reverse=1
 	pygame.display.update()

@@ -26,6 +26,8 @@ class Deska:
 		self.Bing=(4,0)
 		self.Wing=(4,7)
 		self.King=self.Wing
+		self.text=""
+		self.resultstring="Game in progress"
 	def draw(self):
 		self.screen.blit(self.normal,(0,0))
 		self.screen.blit(self.abcn,(0,480))
@@ -36,9 +38,24 @@ class Deska:
 			for j in range(8):
 				if self.picture[i][j]!=0:
 					self.screen.blit(self.picture[i][j],(j*60,i*60))
-		if help:
+		if self.help:
+			self.screen.blit(pygame.image.load("../chess/Images/Description1.png"), (495,375))
 			for i in self.moves:
 				self.screen.blit(pygame.image.load("../chess/Images/Dot.png"), tuple([60*x for x in i]))
+		else:
+			self.screen.blit(pygame.image.load("../chess/Images/Description0.png"), (495,375))
+		if self.reverse:
+			self.screen.blit(pygame.image.load("../chess/Images/Reverse1.png"), (495,405))
+		else:
+			self.screen.blit(pygame.image.load("../chess/Images/Reverse0.png"), (495,405))
+		self.screen.blit(pygame.image.load("../chess/Images/I_E.png"), (495,465))
+		self.screen.blit(pygame.image.load("../chess/Images/Tex_Input.png"), (495,435))
+		self.screen.blit(pygame.image.load("../chess/Images/Result.png"), (495,0))
+		self.screen.blit(pygame.image.load("../chess/Images/Arrows.png"), (495,345))
+		self.screen.blit(pygame.image.load("../chess/Images/New.png"), (495,315))
+		self.screen.blit(pygame.image.load("../chess/Images/Text.png"), (495,30))
+		self.Font=pygame.font.Font(None,20).render(self.resultstring, True, (0,0,0))
+		self.screen.blit(self.Font, (500,8))
 	def rever(self):
 		if self.normal==self.image:
 			self.normal=self.imager
@@ -51,7 +68,10 @@ class Deska:
 		self.boardstate=self.boardstate[::-1]
 		self.boardstate=np.fliplr(self.boardstate)
 		if self.enpassant!=None:
-			self.enpassant=(self.enpassant[0],7-self.enpassant[1])
+			self.enpassant=(7-self.enpassant[0],7-self.enpassant[1])
+		self.Wing=(7-self.Wing[0],7-self.Wing[1])
+		self.Bing=(7-self.Bing[0],7-self.Bing[1])
+		self.King=(7-self.King[0],7-self.King[1])
 		self.updatepicture()
 	def generatenew(self, type=0):
 		with open("start.txt","r") as f:
@@ -75,10 +95,18 @@ class Deska:
 		for i in range(8):
 			for j in range(8):
 				self.picture[i][j]=piece.getpicture(self.boardstate[i][j])
+		print(self.boardstate)
+		print("")
+		print(self.King)
 	def domove(self,coords):
 		piece.domove(coords,self)
 	def promote(self,coords):
-		pass
+		slov={"Q":9, "q":9, "R":5, "r":5, "B":4, "b":4, "N":3, "n":3, "Queen":9, "queen":9, "Rook":5, "rook":5, "Bishop":4, "bishop":4, "Knight":3, "knight": 3, "Královna":9,"královna":9, "Věž":5, "věž":5, "Střelec":4, "střelec":4, "Jezdec":3, "jezdec":3}
+		try:
+			fig=slov[self.text]
+		except KeyError:
+			fig=9
+		self.boardstate[coords[1]][coords[0]]=fig.self.turn
 	def isn_at(self,x,y):
 		for i in (-2,2):
 			for j in (-1,1):
@@ -90,7 +118,7 @@ class Deska:
 			x2=x+i
 			y2=y+i
 			while x2>=0 and x2<8:
-				if self.boardstate[y][x2]==0:
+				if self.boardstate[y][x2]==0 or self.boardstate[y][x2]*self.turn==65 or self.boardstate[y][x2]*self.turn==66:
 					x2+=i
 				elif self.boardstate[y][x2]*self.turn in {-6,-5,-9}:
 					return 0
@@ -98,7 +126,7 @@ class Deska:
 				else:
 					break
 			while y2>=0 and y2<8:
-				if self.boardstate[y2][x]==0:
+				if self.boardstate[y2][x]==0 or self.boardstate[y2][x]*self.turn==65 or self.boardstate[y2][x]*self.turn==66:
 					y2+=i
 				elif self.boardstate[y2][x]*self.turn in {-6,-5,-9}:
 					return 0
@@ -110,7 +138,7 @@ class Deska:
 				x2=x+i
 				y2=y+j
 				while x2>=0 and y2>=0 and x2<8 and y2<8: 
-					if self.boardstate[y2][x2]==0:
+					if self.boardstate[y2][x2]==0 or self.boardstate[y2][x2]*self.turn==65 or self.boardstate[y2][x2]*self.turn==66:
 						x2+=i
 						y2+=j
 					elif self.boardstate[y2][x2]*self.turn==-4 or self.boardstate[y2][x2]*self.turn==-9:
@@ -120,17 +148,17 @@ class Deska:
 						break
 		f=-self.turn-(self.reverse-self.turn*self.reverse)
 		for i in (1,-1):
-			if 8>x+i>-1 and 8>y+f>-1 and self.boardstate[y+f][x+i]*self.turn==-1 or self.boardstate[y+f][x+i]*self.turn==-2:
+			if 8>x+i>-1 and 8>y+f>-1 and (self.boardstate[y+f][x+i]*self.turn==-1 or self.boardstate[y+f][x+i]*self.turn==-2):
 				return 0
 		for i in (1,-1):
 			g=8>x+i>-1
-			if g and self.boardstate[y][x+i]*self.turn==-66 or self.boardstate[y][x+i]*self.turn==-65:
+			if g and (self.boardstate[y][x+i]*self.turn==-66 or self.boardstate[y][x+i]*self.turn==-65):
 				return 0
 			for j in (1,-1):
 				if 8>y+j>-1:
 					if self.boardstate[y+j][x]*self.turn==-66 or self.boardstate[y+j][x]*self.turn==-65:
 						return 0
-					if g and self.boardstate[y+j][x+i]*self.turn==-66 or self.boardstate[y+j][x+i]*self.turn==-65:
+					if g and (self.boardstate[y+j][x+i]*self.turn==-66 or self.boardstate[y+j][x+i]*self.turn==-65):
 						return 0
 		return 1
 	def trymove(self,x,y):
@@ -144,35 +172,6 @@ class Deska:
 		self.boardstate[self.select[1]][self.select[0]]=self.boardstate[y][x]
 		self.boardstate[y][x]=memor
 		return i
-	def trystalemate(self):
-		piece.getmove(self.boardstate[self.King[1]][self.King[0]], self.King[0], self.King[1], self)
-		if len(self.moves)!=0:
-			self.moves.clear()
-			return 0
-		heur=-self.turn-(self.reverse-self.turn*self.reverse)
-		for i in range(heur%7-heur,(-heur)%7+2*heur,heur):
-			for j in range(8):
-				if self.boardstate[i][j]*self.turn>0:
-					self.select=(j,i)
-					piece.getmove(self.boardstate[i][j], j, i, self)
-					self.select=None
-					if len(self.moves)!=0:
-						self.moves.clear()
-						return 0
-		return 1
-	def updateresult(self):
-		if self.trystalemate():
-			if self.isn_at(self.King[0], self.King[1]):
-				self.result=0
-			else:
-				self.result=self.turn*-1
-		else:
-			if self.fiftydraw>=100:
-				self.result=0
-			elif self.Threefold():
-				self.result=0
-			elif self.Dead_position():
-				self.result=0
 	def Threefold(self):
 		counter=0
 		i=-1
@@ -195,4 +194,41 @@ class Deska:
 		if minor<2:
 			return 1
 		return 0
-		
+	def trystalemate(self):
+		piece.getmove(self.boardstate[self.King[1]][self.King[0]], self.King[0], self.King[1], self)
+		if len(self.moves)!=0:
+			self.moves.clear()
+			return 0
+		heur=-self.turn-(self.reverse-self.turn*self.reverse)
+		for i in range(heur%7-heur,(-heur)%7+2*heur,heur):
+			for j in range(8):
+				if self.boardstate[i][j]*self.turn>0:
+					self.select=(j,i)
+					piece.getmove(self.boardstate[i][j], j, i, self)
+					self.select=None
+					if len(self.moves)!=0:
+						self.moves.clear()
+						return 0
+		return 1
+	def updateresult(self):
+		if self.result==None:
+			if self.trystalemate():
+				if self.isn_at(self.King[0], self.King[1]):
+					self.result=0
+					self.resultstring="Draw by stalemate"
+				else:
+					self.result=self.turn*-1
+					if self.result==1:
+						self.resultstring="White won by checkmate"
+					else:
+						self.resultstring="Black won by checkmate"
+			else:
+				if self.fiftydraw>=100:
+					self.result=0
+					self.resultstring="Draw by 50 move rule"
+				elif self.Threefold():
+					self.result=0
+					self.resultstring="Draw by threefold repetition"
+				elif self.Dead_position():
+					self.result=0
+					self.resultstring="Draw by insufficient material"
