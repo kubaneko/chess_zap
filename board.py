@@ -55,6 +55,8 @@ class Deska:
 		self.screen.blit(pygame.image.load("../chess/Images/New.png"), (495,315))
 		self.screen.blit(pygame.image.load("../chess/Images/Text.png"), (495,30))
 		self.Font=pygame.font.Font(None,20).render(self.resultstring, True, (0,0,0))
+		self.Text=pygame.font.Font(None,30).render(self.text, True, (0,0,0))
+		self.screen.blit(self.Text, (500,440))
 		self.screen.blit(self.Font, (500,8))
 	def rever(self):
 		if self.normal==self.image:
@@ -72,15 +74,22 @@ class Deska:
 		self.Wing=(7-self.Wing[0],7-self.Wing[1])
 		self.Bing=(7-self.Bing[0],7-self.Bing[1])
 		self.King=(7-self.King[0],7-self.King[1])
-		self.updatepicture()
 	def generatenew(self, type=0):
+		self.boardstate=np.zeros((8,8), dtype=np.int8)
+		if self.reverse and self.turn==-1:
+			self.rever()
 		with open("start.txt","r") as f:
 			for i in range(0,2):
 				v=f.readline().split()
 				for j in range(0,len(v)):
 					self.boardstate[7-i][j]=np.int8(v[j])
 					self.boardstate[i][j]=-np.int8(v[j])
+		self.Bing=(4,0)
+		self.Wing=(4,7)
+		self.King=self.Wing
 		self.History=[self.boardstate.copy()]
+		self.pointer=0
+		self.turn=1
 		self.threefold=1
 		self.fiftydraw=0
 		self.result=None
@@ -89,24 +98,22 @@ class Deska:
 		x=coords[0]//60
 		y=coords[1]//60
 		self.select=(x,y)
-		if self.boardstate[y][x]*self.turn>0:
+		if self.boardstate[y][x]*self.turn>0 and self.pointer==len(self.History)-1:
 			piece.getmove(self.boardstate[y][x], x, y, self)    
 	def updatepicture(self):
 		for i in range(8):
 			for j in range(8):
-				self.picture[i][j]=piece.getpicture(self.boardstate[i][j])
-		print(self.boardstate)
-		print("")
-		print(self.King)
+				self.picture[i][j]=piece.getpicture(self.History[self.pointer][i][j])
 	def domove(self,coords):
 		piece.domove(coords,self)
 	def promote(self,coords):
 		slov={"Q":9, "q":9, "R":5, "r":5, "B":4, "b":4, "N":3, "n":3, "Queen":9, "queen":9, "Rook":5, "rook":5, "Bishop":4, "bishop":4, "Knight":3, "knight": 3, "Královna":9,"královna":9, "Věž":5, "věž":5, "Střelec":4, "střelec":4, "Jezdec":3, "jezdec":3}
 		try:
 			fig=slov[self.text]
+			self.text=""
 		except KeyError:
 			fig=9
-		self.boardstate[coords[1]][coords[0]]=fig.self.turn
+		self.boardstate[self.select[1]][self.select[0]]=fig*self.turn
 	def isn_at(self,x,y):
 		for i in (-2,2):
 			for j in (-1,1):
@@ -232,3 +239,30 @@ class Deska:
 				elif self.Dead_position():
 					self.result=0
 					self.resultstring="Draw by insufficient material"
+	def Import(self):
+		"""
+		if len(self.text.split("."))==2:
+			pass
+		elif len(self.text.split("."))==1:
+			self.text=self.text+".txt"
+		else:
+			self.text="Invalid format"
+			return
+		"""
+#		try:
+		with open("Game.txt","r") as f:
+			try:
+				while 1:
+					g=f.readline()
+					if g[0]=="1":
+						break
+			except EOFError:
+				pass
+			g=g+f.read()
+			g=g.strip().split()
+			self.generatenew()
+			piece.Playout(g,self)
+#		except:
+#			self.text="file not found"
+	def Export(self):
+		pass

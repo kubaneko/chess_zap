@@ -144,17 +144,18 @@ def move(coords,deska):
 		deska.fiftydraw=0
 	deska.boardstate[coords[1]][coords[0]]=deska.boardstate[deska.select[1]][deska.select[0]]
 	deska.boardstate[deska.select[1]][deska.select[0]]=0
-	deska.updatepicture()
 	deska.select=None
 	deska.moves.clear()
 	if deska.enpassant!=None and deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]==-deska.turn*2:
 		deska.boardstate[deska.enpassant[1]][deska.enpassant[0]]=deska.turn*-1
 		deska.enpassant=None
-	deska.History.append(deska.boardstate.copy())
 	deska.threefold+=1
 	deska.fiftydraw+=1
+	deska.pointer+=1
 	if deska.reverse:
 		deska.rever()
+	deska.History.append(deska.boardstate.copy())
+	deska.updatepicture()
 	deska.turn*=-1
 	if deska.turn==-1:
 		deska.King=deska.Bing
@@ -200,6 +201,73 @@ def getmove(number,x,y,deska):
 	slov2[abs(number)](number,x,y,deska)
 def domove(coords,deska):
 	slov3[abs(deska.boardstate[deska.select[1]][deska.select[0]])](coords, deska)
+def Playout(moves, deska):
+	c=0
+	for move in moves:
+		of=0
+		if move[-1]=="+" or move[-1]=="#":
+			of=-1
+		if c and move[-1]!="}":
+			pass
+		elif move[-1]=="}":
+			c=0
+		else:
+			if move[0]=="{":
+				c=1
+			elif ord("A")<=ord(move[0])<=ord("Z"):
+				if move[0]=="O":
+					deska.select=deska.King
+					factor=1
+					if deska.turn==-1 and deska.reverse:
+						factor=-1
+					if len(move)==5:
+						domove((deska.King[0]-2*factor,deska.select[1]),deska)
+					else:
+						domove((deska.King[0]+2*factor,deska.select[1]),deska)
+					deska.select=None
+				elif deska.reverse and deska.turn==-1:
+					Playpgn(move, deska,7-ord(move[-2+of])+ord("a"),int(move[-1+of]),of)
+				else:
+					Playpgn(move, deska,ord(move[-2+of])-ord("a"),8-int(move[-1+of]),of)
+			elif ord("a")<=ord(move[0]) and ord(move[0])<=ord("z"):
+				if deska.reverse and deska.turn==-1:
+					Playpgn(move, deska,7-ord(move[-2+of])+ord("a"),int(move[-1+of])-1,of,"P")
+				else:
+					Playpgn(move, deska,ord(move[-2+of])-ord("a"),8-int(move[-1+of]),of,"P")
+def Playpgn(move, deska,x,y,of,fig=None):
+	if len(move)>2-of and move[-3+of]=="x":
+		of-=1
+	figs=[]
+	deska.moves.clear()
+	if move[0]==K:
+		fig="K"
+	else:
+		for i in range(8):
+			for j in range(8):
+				if deska.boardstate[i][j]*deska.turn>0 and (slov4[abs(deska.boardstate[i][j])]==move[0] or slov4[abs(deska.boardstate[i][j])]==fig):
+					deska.select=(j,i)
+					getmove(deska.boardstate[i][j],j,i,deska)
+					if (x,y) in deska.moves:
+						figs.append((j,i))
+					deska.moves.clear()
+					deska.select=None
+	if len(figs)==1:
+		deska.select=figs[0]
+		domove((x,y),deska)
+		return
+	elif len(figs)>1:
+		p=0
+		if ord("a")<=ord(move[-3+of])<=ord("z"):
+			p=1
+		for i in figs:
+			if i[p]==move[-3+of]:
+				deska.select=i
+				domove((x,y),deska)
+	else:
+		deska.text="Invalid Game"
+
+
+
 
 P=pygame.image.load("../chess/Images/P-1.png")
 N=pygame.image.load("../chess/Images/N-1.png")
@@ -216,3 +284,4 @@ r=pygame.image.load("../chess/Images/R1.png")
 slov={1: p, 2: p, 3: n, 4: b, 5: r,6: r, 9: q, 66: k, 65: k, -1: P, -2: P, -3: N, -4: B, -5: R,-6: R, -9: Q, -66: K, -65: K}
 slov3={1: pove, 2: pove, 3: move, 4: move, 5: move, 6: rove, 9: move, 66: kove, 65: kove}
 slov2={1: Pawn, 2: Pawn, 3: Night, 4: Bishop, 5: Rook, 6: Rook, 9: Queen, 66: King, 65: king}
+slov4={1:"P",2:"P",3: "N", 4: "B", 5: "R",6: "R", 9: "Q",65:"K", 66: "K"}
