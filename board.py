@@ -28,6 +28,7 @@ class Deska:
 		self.King=self.Wing
 		self.text=""
 		self.resultstring="Game in progress"
+		self.pgn=[]
 	def draw(self):
 		self.screen.blit(self.normal,(0,0))
 		self.screen.blit(self.abcn,(0,480))
@@ -94,6 +95,7 @@ class Deska:
 		self.fiftydraw=0
 		self.result=None
 		self.updatepicture()
+		self.pgn=[]
 	def selmove(self,coords):
 		x=coords[0]//60
 		y=coords[1]//60
@@ -110,7 +112,6 @@ class Deska:
 		slov={"Q":9, "q":9, "R":5, "r":5, "B":4, "b":4, "N":3, "n":3, "Queen":9, "queen":9, "Rook":5, "rook":5, "Bishop":4, "bishop":4, "Knight":3, "knight": 3, "Královna":9,"královna":9, "Věž":5, "věž":5, "Střelec":4, "střelec":4, "Jezdec":3, "jezdec":3}
 		try:
 			fig=slov[self.text]
-			self.text=""
 		except KeyError:
 			fig=9
 		self.boardstate[self.select[1]][self.select[0]]=fig*self.turn
@@ -239,8 +240,12 @@ class Deska:
 				elif self.Dead_position():
 					self.result=0
 					self.resultstring="Draw by insufficient material"
+		if self.isn_at(self.King[0],self.King[1])==0:
+			if self.result!=None and abs(self.result)==1:
+				self.pgn[-1]+="#"
+			else:
+				self.pgn[-1]+="+"
 	def Import(self):
-		"""
 		if len(self.text.split("."))==2:
 			pass
 		elif len(self.text.split("."))==1:
@@ -248,21 +253,53 @@ class Deska:
 		else:
 			self.text="Invalid format"
 			return
-		"""
-#		try:
-		with open("Game.txt","r") as f:
-			try:
-				while 1:
-					g=f.readline()
-					if g[0]=="1":
-						break
-			except EOFError:
-				pass
-			g=g+f.read()
-			g=g.strip().split()
-			self.generatenew()
-			piece.Playout(g,self)
-#		except:
-#			self.text="file not found"
+		try:
+			with open(self.text,"r") as f:
+				try:
+					while 1:
+						g=f.readline()
+						if g[0]=="1":
+							break
+				except EOFError:
+					pass
+				g=g+f.read()
+				g=g.strip().split()
+				self.generatenew()
+				piece.Playout(g,self)
+		except:
+			self.text="file not found"
 	def Export(self):
-		pass
+		if len(self.text.split("."))==2:
+			pass
+		elif len(self.text.split("."))==1:
+			self.text=self.text+".txt"
+		else:
+			self.text="Invalid format"
+			return
+		f=open(self.text,"w")
+		if self.result==None:
+			result="*"
+		elif self.result==0:
+			result="1/2-1/2"
+		elif self.result==1:
+			result="1-0"
+		else:
+			result="0-1"
+		f.write("[Event \"Zapoctovy program test hra\"]\n[Site \"https://github.com/kubaneko/chess_zap\"]\n[Date \"??\"]\n[White \"Player 1\"]\n[Black \"Player 2\"]\n[Result \""+result+"\"]\n\n")
+		i=1
+		for j in range(len(self.pgn)-1):
+			if self.pgn[j][0]=="P":
+				self.pgn[j]=self.pgn[j][1:]
+		for j in range(0,len(self.pgn),2):
+			if j+1<len(self.pgn):
+				b=self.pgn[j+1]+" " 
+			else:
+				b=""
+			f.write(str(i)+". "+self.pgn[j]+"   "+b)
+			i+=1
+			if i%7==0:
+				f.write("\n")
+		if result!="*":
+			f.write(result)
+		f.close()
+

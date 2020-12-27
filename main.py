@@ -18,7 +18,6 @@ pygame.display.set_icon(icon)
 deska=board.Deska(screen)
 deska.generatenew()
 select="else"
-deska.Import()
 while game:
 	Clock.tick(FPS)
 	screen.fill(COLOUR)
@@ -81,7 +80,10 @@ while game:
 							elif mys[1]<465:
 								select="text"
 							else:
-								pass
+								if mys[0]>594:
+									deska.Export()
+								else:
+									deska.Import()
 				else:
 					deska.select=None
 					deska.moves.clear()
