@@ -28,6 +28,7 @@ while game:
 		if event.type==pygame.MOUSEBUTTONDOWN:
 			if select=="text":
 				select="else"
+				deska.Textin=deska.Texti
 			else:
 				mys=pygame.mouse.get_pos()
 				if mys[0]<=480 and mys[1]<=480:
@@ -44,14 +45,14 @@ while game:
 				elif mys[0]>495:
 					deska.select=None
 					deska.moves.clear()
-					if mys[1]>314:
-						if mys[1]<=404:
-							if mys[1]>374:
+					if mys[1]>295:
+						if mys[1]<405:
+							if mys[1]>375:
 								if deska.help:
 									deska.help=0
 								else:
 									deska.help=1
-							elif mys[1]>344:
+							elif mys[1]>345:
 								if mys[0]<545:
 									deska.pointer=0
 								elif mys[0]<595:
@@ -63,8 +64,19 @@ while game:
 								else:
 									deska.pointer=len(deska.History)-1
 								deska.updatepicture()
-							else:
+							elif mys[1]>315:
 								deska.generatenew()
+							else:
+								if deska.result==None:
+									if mys[0]>595:
+										deska.result=0
+										deska.resultstring="Draw by agreement"
+									else:
+										deska.result=deska.turn*-1
+										if deska.result==-1:
+											deska.resultstring="Black won by resignation"
+										else:
+											deska.resultstring="White eon by resignation"
 						else: 
 							if mys[1]<435:
 								for i in range(1,len(deska.History), 2):
@@ -78,6 +90,7 @@ while game:
 								else:
 									deska.reverse=1
 							elif mys[1]<465:
+								deska.Textin=deska.Texti2
 								select="text"
 							else:
 								if mys[0]>594:

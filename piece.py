@@ -186,12 +186,23 @@ def rove(coords,deska):
 	deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*5
 	move(coords,deska)
 def kove(coords,deska):
+	tag=""
 	if abs(deska.boardstate[deska.select[1]][deska.select[0]])==66:
 		g=coords[0]-deska.select[0]
 		deska.boardstate[deska.select[1]][deska.select[0]]=deska.turn*65
 		if abs(g)==2:
 			deska.boardstate[deska.select[1]][deska.select[0]+g//2]=deska.turn*5
 			deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]=0
+			if deska.turn*deska.reverse==-1:
+				if g<0:
+					tag="O-O"
+				else:
+					tag="O-O-O"
+			else:
+				if g<0:
+					tag="O-O-O"
+				else:
+					tag="O-O"
 		if deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]*deska.turn==6:
 			deska.boardstate[deska.select[1]][int((1-g//2)*3.5)]=5*deska.turn
 		if deska.boardstate[deska.select[1]][int((1+g//2)*3.5)]*deska.turn==6:
@@ -200,7 +211,7 @@ def kove(coords,deska):
 		deska.Bing=coords
 	else:
 		deska.Wing=coords
-	move(coords,deska)
+	move(coords,deska,tag)
 def getpicture(number):
 	if number==0:
 		return 0
@@ -333,8 +344,11 @@ def Translatemove1(deska, coords,tags=""):
 	other=[]
 	g=deska.select
 	if tags!="":
-		tags="="+tags
-		move="P"+move[1:]
+		if tags[0]=="O":
+			return tags
+		else:	
+			tags="="+tags
+			move="P"+move[1:]
 	deska.moves.clear()
 	for i in range(8):
 		for j in range(8):
