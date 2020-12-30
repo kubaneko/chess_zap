@@ -260,13 +260,9 @@ class Deska:
 		return 1
 	def updateresult(self):
 		if self.isn_at(self.King[0],self.King[1])==0:
-			k=1
-			if self.result!=None and abs(self.result)==1:
-				self.pgn[-1]+="#"
-			else:
-				self.pgn[-1]+="+"
-		else:
 			k=0
+		else:
+			k=1
 		# K poslednímu tahu v pgn notaci přidá značku matu nebo šachu. Toto je zde, proto, že zbytek tahu se generuje před jeho zahráním, aby se mohlo odhalit braní figur.
 		# zjistí zda se nezměnil výsledek hry, mat je detekován jako pat, kdy je král pod útokem, ještě je možnost se vzdát a nebo domluvit na remíze to tato funkce neřeší.
 		if self.result==None:
@@ -291,6 +287,11 @@ class Deska:
 				elif self.Dead_position():
 					self.result=0
 					self.resultstring="Draw by insufficient material"
+		if k==0:
+			if self.result!=None and abs(self.result)==1:
+				self.pgn[-1]+="#"
+			else:
+				self.pgn[-1]+="+"
 	def Import(self):
 		# funkce se pokusí importovat šachovou hru a předá ji funkci v lepší podobě popřípadě nahlásí chybu
 		if len(self.text.split("."))==2:
