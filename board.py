@@ -149,6 +149,7 @@ class Deska:
 		# povýší pěšáka defaultně na královnu pokud není řečeno jinak
 	def isn_at(self,x,y):
 		# zjištuje jestli je zadané pole pod útokem, implementace hledání figur tam kde by na dané pole mohly útočit.
+		# pro útoky neskákajících figur jsem musel nastavit, že nejsou zastaveny králem
 		for i in (-2,2):
 			for j in (-1,1):
 				if 8>x+i>-1 and 8>y+j>-1 and self.boardstate[y+j][x+i]*self.turn==-3:
@@ -216,6 +217,7 @@ class Deska:
 		return i
 	def Threefold(self):
 		# Hledá zda se aktuální pozice už 3. nezopakovala, to je považováno za remízu.
+		# self. threefold je ukazate, kdy je ještě možné mluvit o stejné pozici
 		counter=0
 		i=-1
 		while -self.threefold<=i and counter<3:
@@ -256,10 +258,19 @@ class Deska:
 						return 0
 		return 1
 	def updateresult(self):
+		if self.isn_at(self.King[0],self.King[1])==0:
+			k=1
+			if self.result!=None and abs(self.result)==1:
+				self.pgn[-1]+="#"
+			else:
+				self.pgn[-1]+="+"
+		else:
+			k=0
+		# K poslednímu tahu v pgn notaci přidá značku matu nebo šachu. Toto je zde, proto, že zbytek tahu se generuje před jeho zahráním, aby se mohlo odhalit braní figur.
 		# zjistí zda se nezměnil výsledek hry, mat je detekován jako pat, kdy je král pod útokem, ještě je možnost se vzdát a nebo domluvit na remíze to tato funkce neřeší.
 		if self.result==None:
 			if self.trystalemate():
-				if self.isn_at(self.King[0], self.King[1]):
+				if k:
 					self.result=0
 					self.resultstring="Draw by stalemate"
 				else:
@@ -279,12 +290,6 @@ class Deska:
 				elif self.Dead_position():
 					self.result=0
 					self.resultstring="Draw by insufficient material"
-		if self.isn_at(self.King[0],self.King[1])==0:
-			if self.result!=None and abs(self.result)==1:
-				self.pgn[-1]+="#"
-			else:
-				self.pgn[-1]+="+"
-		# K poslednímu tahu v pgn notaci přidá značku matu nebo šachu. Toto je zde, proto, že zbytek tahu se generuje před jeho zahráním, aby se mohlo odhalit braní figur.
 	def Import(self):
 		# funkce se pokusí importovat šachovou hru a předá ji funkci v lepší podobě popřípadě nahlásí chybu
 		if len(self.text.split("."))==2:
@@ -309,6 +314,8 @@ class Deska:
 				piece.Playout(g,self)
 		except:
 			self.text="file not found"
+			if self.resultstring=="Who knows its all wrong":
+				self.text="Invalid game"
 	def Export(self):
 		# Načte jméno souboru, který bud vytvoří nebo do nějž zapíše
 		if len(self.text.split("."))==2:
