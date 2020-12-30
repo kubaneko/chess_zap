@@ -140,6 +140,7 @@ class Deska:
 		# provede tah (modul piece)
 	def promote(self,coords):
 		slov={"Q":9, "q":9, "R":5, "r":5, "B":4, "b":4, "N":3, "n":3, "Queen":9, "queen":9, "Rook":5, "rook":5, "Bishop":4, "bishop":4, "Knight":3, "knight": 3, "Královna":9,"královna":9, "Věž":5, "věž":5, "Střelec":4, "střelec":4, "Jezdec":3, "jezdec":3}
+		# vrací číslo povyšovanné figury
 		try:
 			fig=slov[self.text]
 			self.text=""
