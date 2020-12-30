@@ -74,15 +74,25 @@ while game:
 
 							elif mys[1]>345:
 								if mys[0]<545:
+									if deska.pointer%2==1:
+										deska.rev()
 									deska.pointer=0
 								elif mys[0]<595:
+									if deska.pointer==1:
+										deska.rev()
 									if deska.pointer!=0:
 										deska.pointer-=1
 								elif mys[0]<645:
+									if deska.pointer==len(deska.History)-2:
+										deska.rev()
 									if deska.pointer!=len(deska.History)-1:
 										deska.pointer+=1
 								else:
+									if (len(deska.History)%2==0 and deska.pointer%2==0) or (len(deska.History)%2==1 and deska.pointer%2==1):
+										deska.rev()
 									deska.pointer=len(deska.History)-1
+								if deska.pointer!=len(deska.History)-1 and deska.pointer:
+									deska.rev()
 								deska.updatepicture()
 							# šipky na projíždění aktuální hry
 
@@ -100,7 +110,7 @@ while game:
 										if deska.result==-1:
 											deska.resultstring="Black won by resignation"
 										else:
-											deska.resultstring="White eon by resignation"
+											deska.resultstring="White won by resignation"
 									# manuální ukončení hry-tlačítko
 
 						else: 
