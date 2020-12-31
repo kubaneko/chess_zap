@@ -357,11 +357,12 @@ class Deska:
 		# Zapíše tahy převedené do pgn notace z self.pgn podle formátu.
 	def rev(self):
 		# funkce pro konsistentní popis šachovnice při přehrávání her
-		if self.normal==self.image:
-			self.normal=self.imager
-			self.nums=self.numr
-			self.abcn=self.abcr
-		else:
-			self.normal=self.image
-			self.nums=self.num
-			self.abcn=self.abc
+		if self.reverse:
+			if self.normal==self.image:
+				self.normal=self.imager
+				self.nums=self.numr
+				self.abcn=self.abcr
+			else:
+				self.normal=self.image
+				self.nums=self.num
+				self.abcn=self.abc
