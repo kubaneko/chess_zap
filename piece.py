@@ -331,7 +331,9 @@ def Playout(moves, deska):
 				else:
 					Playpgn(move, deska,ord(move[-2+of])-ord("a"),8-int(move[-1+of]),of,"P")
 			# jinak přeloží souřadnice z algebraické notace(e5) do souřadnic mého pole
-	if deska.result==None:
+	if deska.resultstring=="Who knows its all wrong":
+		pass
+	elif deska.result==None:
 		deska.result=result
 		deska.resultstring=resultstr
 	# pokud nebylo dosaženo výsledku na šachovnici výsledek je stejný jako v původní hře
@@ -352,27 +354,35 @@ def Playpgn(move, deska,x,y,of,fig=None):
 	else:
 		k=0
 	# pokud jde o pěšáka mění se požadovaný ofset, protože se k tahům nepíše P jako pawn
-	if abs(of)+3-k-len(move)==2:
+	# pokud ne tak se kouknu jestli odpovídá figura v tahu figuře na šachovnici
+	if of-3+k+len(move)==2:
 		if deska.reverse and deska.turn==-1:
-			deska.select((7-ord(move[-3+of])+ord("a"),int(move[-2+of])))
+			deska.select=((7-ord(move[-4+of])+ord("a"),int(move[-3+of])))
 		else:
-			deska.select((ord(move[-3+of])-ord("a"),8-int(move[-2+of])))
+			deska.select=((ord(move[-4+of])-ord("a"),8-int(move[-3+of])))
+		if slov4[abs(deska.boardstate[deska.select[1]][deska.select[0]])]!=move[0]:
+			deska.text="Invalid game"
+			deska.result=0
+			deska.resultstring="Who knows its all wrong"
+			deska.select=None
+			return
+			# zjištuje zda figura je požadovaného typu
 		domove((x,y),deska)
 		deska.updateresult()
 		deska.select=None
 		return
 	# pokud tah má formu Nf3xd4 tak vím kde je figura a tak s ní zahraju
-	elif abs(of)+3-k-len(move)==1:
+	elif of-3+k+len(move)==1:
 		if deska.reverse and deska.turn==-1:
-			yy=7-ord(move[-2+of])+ord("a")
+			xx=7-ord(move[-3+of])-ord("a")
 		else:
-			yy=ord(move[-2+of])-ord("a")
+			xx=(ord(move[-3+of])-ord("a"))
 		for j in range(8):
-			if deska.boardstate[yy][j]*deska.turn>0 and (slov4[abs(deska.boardstate[yy][j])]==move[0] or slov4[abs(deska.boardstate[yy][j])]==fig):
-				deska.select=(j,yy)
-				getmove(deska.boardstate[yy][j],j,yy,deska)
+			if deska.boardstate[j][xx]*deska.turn>0 and (slov4[abs(deska.boardstate[j][xx])]==move[0] or slov4[abs(deska.boardstate[j][xx])]==fig):
+				deska.select=(xx,j)
+				getmove(deska.boardstate[j][xx],xx,j,deska)
 				if (x,y) in deska.moves:
-					domove((j,yy),deska)
+					domove((x,y),deska)
 					deska.moves.clear()
 					deska.select=None
 					deska.updateresult()

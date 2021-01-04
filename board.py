@@ -301,23 +301,22 @@ class Deska:
 		else:
 			self.text="Invalid format"
 			return
-		try:
-			with open(self.text,"r") as f:
-				try:
-					while 1:
-						g=f.readline()
-						if g[0]=="1":
-							break
-				except EOFError:
-					pass
-				g=g+f.read()
-				g=g.strip().split()
-				self.generatenew()
-				piece.Playout(g,self)
-		except:
-			self.text="file not found"
-			if self.resultstring=="Who knows its all wrong":
-				self.text="Invalid game"
+#		try:
+		with open(self.text,"r") as f:
+			try:
+				while 1:
+					g=f.readline()
+					if g[0]=="1":
+						break
+			except EOFError:
+				pass
+			g=g+f.read()
+			g=g.strip().split()
+			self.generatenew()
+			piece.Playout(g,self)
+#		except:
+#			if self.text!="Invalid game":
+#				self.text="file not found"
 	def Export(self):
 		# Načte jméno souboru, který bud vytvoří nebo do nějž zapíše
 		if len(self.text.split("."))==2:
